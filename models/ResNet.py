@@ -93,25 +93,28 @@ from tensorflow.keras.regularizers import l2
 
 class ConvBlocks:
     @staticmethod
-    def BNConv(x_in, filters, kernel_size, strides, l2_weight = 1e-4):
+    def BNConv(x_in, filters, kernel_size, strides, l2_weight = 1e-4, has_act = True):
         x = layers.Conv2D(filters, kernel_size = kernel_size, strides = strides, 
                 padding = 'same', kernel_regularizer=l2(l2_weight))(x_in)
         x = layers.BatchNormalization()(x)
-        x = layers.ReLU()(x)          
+        if has_act:
+            x = layers.ReLU()(x)          
         return x
 
     @classmethod
     def SimpleLayer(cls, x_in, n_channels, downsampling = False, l2_weight = 1e-4):
         if downsampling:
             x = cls.BNConv(x_in, n_channels, (3,3), strides = (2,2), l2_weight = l2_weight)
-            x = cls.BNConv(x, n_channels, (3,3), strides = (1,1), l2_weight = l2_weight)
+            x = cls.BNConv(x, n_channels, (3,3), strides = (1,1), l2_weight = l2_weight, has_act = False)
             x_tmp = layers.Conv2D(n_channels, kernel_size = (1,1), strides = (2,2), 
                 padding = 'same', kernel_regularizer=l2(l2_weight))(x_in)
             x = layers.Add()([x, x_tmp])
+            x = layers.ReLU()(x)
         else:
             x = cls.BNConv(x_in, n_channels, (3,3), strides = (1,1), l2_weight = l2_weight)
-            x = cls.BNConv(x, n_channels, (3,3), strides = (1,1), l2_weight = l2_weight)
+            x = cls.BNConv(x, n_channels, (3,3), strides = (1,1), l2_weight = l2_weight, has_act= False)
             x = layers.Add()([x, x_in])
+            x = layers.ReLU()(x)
         return x
     
     @classmethod
@@ -119,15 +122,17 @@ class ConvBlocks:
         if downsampling: # ResNet use a quarter of output channel as bottleneck
             x = cls.BNConv(x_in, int(n_channels/4), (1,1), strides = (1,1), l2_weight = l2_weight)
             x = cls.BNConv(x, int(n_channels/4), (3,3), strides = (2,2), l2_weight = l2_weight)
-            x = cls.BNConv(x, n_channels, (1,1), strides = (1,1), l2_weight = l2_weight)
+            x = cls.BNConv(x, n_channels, (1,1), strides = (1,1), l2_weight = l2_weight, has_act = False)
             x_tmp = layers.Conv2D(n_channels, kernel_size = (1,1), strides = (2,2), 
                 padding = 'same', kernel_regularizer=l2(l2_weight))(x_in)
             x = layers.Add()([x, x_tmp])
+            x = layers.ReLU()(x)
         else:
             x = cls.BNConv(x_in, int(n_channels/4), (1,1), strides = (1,1), l2_weight = l2_weight)
             x = cls.BNConv(x, int(n_channels/4), (3,3), strides = (1,1), l2_weight = l2_weight)
-            x = cls.BNConv(x, n_channels, (1,1), strides = (1,1), l2_weight = l2_weight)
+            x = cls.BNConv(x, n_channels, (1,1), strides = (1,1), l2_weight = l2_weight, has_act=False)
             x = layers.Add()([x, x_in])
+            x = layers.ReLU()(x)
         return x    
 
     @classmethod
@@ -173,16 +178,16 @@ def ResNet(input_shape = (224,224,3), n_classes = 1000, first_layer_kernel = 7,
 
 if __name__ == '__main__':
     # ResNet-20 for cifar10 in page.7 of original paper
-    # model = ResNet(input_shape=(32,32,3), n_classes = 10, first_layer_kernel = 3,
-    #             first_layer_downsampling = True, first_pooling = None, 
-    #             residual_blocks=((16,3),(32,3),(64,3)), bottleneck=False)
-    # model.summary()
-    # plot_model(model, 'model.png', show_shapes = True)
-    
-    # ResNet-152 for ImageNet in Table.1 of original paper
-    model = ResNet(input_shape = (224,224,3), n_classes = 1000, first_layer_kernel = 7,
-            first_layer_downsampling = True, first_pooling = (3,3), 
-            residual_blocks = ((256,3),(512,8),(1024,36),(2048,3)),
-            bottleneck = True, l2_weight = 1e-4) 
+    model = ResNet(input_shape=(32,32,3), n_classes = 10, first_layer_kernel = 3,
+                first_layer_downsampling = True, first_pooling = None, 
+                residual_blocks=((16,3),(32,3),(64,3)), bottleneck=False)
     model.summary()
     plot_model(model, 'model.png', show_shapes = True)
+    
+    # ResNet-152 for ImageNet in Table.1 of original paper
+    # model = ResNet(input_shape = (224,224,3), n_classes = 1000, first_layer_kernel = 7,
+    #         first_layer_downsampling = True, first_pooling = (3,3), 
+    #         residual_blocks = ((256,3),(512,8),(1024,36),(2048,3)),
+    #         bottleneck = True, l2_weight = 1e-4) 
+    # model.summary()
+    # plot_model(model, 'model.png', show_shapes = True)
