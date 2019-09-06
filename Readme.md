@@ -13,6 +13,9 @@ Hopefully the examples can help you quickly access modern image models in minute
 * ResNet:
 [source](models/ResNet.py), [document](models/ResNet.md)
 
+* XceptionNet:
+[source](models/XceptionNet.py), [document](models/XceptionNet.md)
+
 * MobileNet V1:
 [source](models/MobileNetV1.py), [document](models/MobileNetV1.md)
 

@@ -66,7 +66,7 @@ from tensorflow.keras.regularizers import l2
     , where 
     ResNet-20: residual_block = ((16,3), (32,3), (64,3)) (error ~ 8.75%)
     ResNet-32: residual_block = ((16,5), (32,5), (64,5)) (error ~ 7.51%)
-    ResNet-44: residual_block = ((16,5), (32,5), (64,5)) (error ~ 7.17%)
+    ResNet-44: residual_block = ((16,7), (32,7), (64,7)) (error ~ 7.17%)
     ResNet-56: residual_block = ((16,9), (32,9), (64,9)) (error ~ 6.97%)
     ResNet-110: residual_block = ((16,18), (32,18), (64,18)) (error ~ 6.43%)
 
@@ -177,10 +177,10 @@ def ResNet(input_shape = (224,224,3), n_classes = 1000, first_layer_kernel = 7,
     return model
 
 if __name__ == '__main__':
-    # ResNet-20 for cifar10 in page.7 of original paper
+    # ResNet-32 for cifar10 in page.7 of original paper
     model = ResNet(input_shape=(32,32,3), n_classes = 10, first_layer_kernel = 3,
                 first_layer_downsampling = True, first_pooling = None, 
-                residual_blocks=((16,3),(32,3),(64,3)), bottleneck=False)
+                residual_blocks=((16,5), (32,5), (64,5)), bottleneck=False)
     model.summary()
     plot_model(model, 'model.png', show_shapes = True)
     
