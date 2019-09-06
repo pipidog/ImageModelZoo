@@ -69,6 +69,7 @@ Given the fact that Xception outperforms ResNet on ImageNet slightly when model
 complexity is similar, hopefully you can still get similar results when using 
 the following parameters.
 '''
+# For cifar10, cifar100 
 # the following parameters will give you roughly the same number of parameters as ResNet 20, 0.27M v.s. 0.30M
 model = XceptionNet(input_shape = (32,32,3), n_classes = 10, 
         first_two_conv = (32, 64, False), maxpool_block = (64, 64),
@@ -76,6 +77,7 @@ model = XceptionNet(input_shape = (32,32,3), n_classes = 10,
         exit_flow = (128, 128, 256, 256), l2_weight = 1e-4)
 
 
+# For cifar10, cifar100
 # the following parameters will give you roughly the same number of parameters as ResNet 32, 0.46M v.s 0.48M    
 model = XceptionNet(input_shape = (32,32,3), n_classes = 10, 
         first_two_conv = (32, 64, False), maxpool_block = (64, 128),
@@ -83,7 +85,7 @@ model = XceptionNet(input_shape = (32,32,3), n_classes = 10,
         exit_flow = (128, 128, 128, 128), l2_weight = 1e-4)
 
 
-# For larger datasets, e.g. ImageNet, try (obtained from original paper)
+# For larger datasets, e.g. ImageNet, use the parameters suggested by the original paper)
 model = XceptionNet(input_shape = (299,299,3), n_classes = 1000, 
         first_two_conv = (32, 64, True), maxpool_block = (128, 256, 728),
         middle_flow_repeat = 8,

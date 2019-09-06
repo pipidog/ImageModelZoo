@@ -72,14 +72,15 @@ from tensorflow.keras.regularizers import l2
     Given the fact that Xception outperforms ResNet on ImageNet slightly when model 
     complexity is similar, hopefully you can still get similar results when using 
     the following parameters.
-
+    
+    # For cifar10 or cifar100
     model = XceptionNet(input_shape = (32,32,3), n_classes = 10, 
             first_two_conv = (32, 64, False), maxpool_block = (64, 64),
             middle_flow_repeat = 8,
             exit_flow = (128, 128, 256, 256), l2_weight = 1e-4)
     (it will give you roughly the same number of parameters as ResNet 20, 0.27M v.s. 0.30M)
 
-    
+    # For cifar10 or cifar100
     model = XceptionNet(input_shape = (32,32,3), n_classes = 10, 
             first_two_conv = (32, 64, False), maxpool_block = (64, 128),
             middle_flow_repeat = 6,
