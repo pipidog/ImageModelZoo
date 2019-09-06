@@ -41,6 +41,8 @@ from tensorflow.keras.regularizers import l2
         of output channels of each sub-block and number of repeats. e.g. ResNet-101
         in Table.1 of the original Table can be expressed as  
         ((256,2),(512,4),(1024,23),(2048,3)) with bottlenect set to True.
+        * Note: there is a downsampling among two residual blocks, therefore, the
+        above setting will reduce spatial resolution 2^8 = 8 times smaller. 
 
     bottleneck: True / False 
         If True, use bottleneck residual sub-locks as shown in ResNet-50, -101, -152

@@ -156,6 +156,7 @@ def MobileNetV2(input_shape = (224,224,3), n_classes = 1000, first_block_filters
     x = layers.GlobalAveragePooling2D()(x)
     x = layers.Reshape((1,1,K.int_shape(x)[-1]))(x)
     x = ConvBlocks.BNConv(x, last_block_filters)
+    x = layers.Flatten()(x)
     x_out = layers.Dense(n_classes, activation='softmax')(x)
 
     model = Model(inputs = x_in, outputs = x_out)

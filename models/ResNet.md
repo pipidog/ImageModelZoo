@@ -32,7 +32,9 @@
         each subblock is always fixed to (3x3), you only need to specify the number
         of output channels of each sub-block and number of repeats. e.g. ResNet-101
         in Table.1 of the original Table can be expressed as 
-        ((256,2),(512,4),(1024,23),(2048,3)), i.e. first block is constituted by two sub-block with output channel = 256 for each and so on. 
+        ((256,2),(512,4),(1024,23),(2048,3)), i.e. first block is constituted by two sub-block with output channel = 256 for each and so on.   
+        * Note: there is a downsampling among two residual blocks, therefore, the
+        above setting will reduce spatial resolution 2^8 = 8 times smaller. 
 
 **bottleneck**, True / False    
         If True, use bottleneck residual sub-locks as shown in ResNet-50, -101, -152
