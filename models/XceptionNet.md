@@ -32,7 +32,7 @@ number of classes in dataset
 number of filters of the first two conv layer and whether to perform a stride = 2
 downsampling in the first layer.
 
-**maxpool_block**, (int, int, ...)
+**maxpool_block**, (int, int, ...)      
 each maxpool-block is constituted by sconv-sconv-maxpool where the number of filters
 are the same for both sconv. Therefore, you only need one parameter, i.e. the number
 of filters, to specify a maxpool_block.    

@@ -9,7 +9,7 @@ from tensorflow.keras.regularizers import l2
 
     Build a Xception Net from scratch, reference https://arxiv.org/abs/1610.02357
 
-    Xception Net has the following structure:
+    Xception Net has the following structure: (see Fig.5 in original paper)
     part 1: two conv, the first conv performs a stride for downsampling (optional)
     part 2: several sconv-sconv-maxpooling block for downsamping
     part 3: repeat xception blocks for several times 
@@ -24,7 +24,7 @@ from tensorflow.keras.regularizers import l2
     part 2: number of sconv-sconv-maxpooling blocks (at least 1 block) and their corresponding filters
     part 3: the number of repeats
     part 4 & part 5: 4 number filters of each sconv layer
-
+    part 6: no paramaters needed
     So it is not difficult to define a Xception Net
     
 { Arguments }
