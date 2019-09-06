@@ -31,14 +31,14 @@
         A Keras model instance
 
 ## Suggested Models
-    ```python
-    # for smaller dataset, such as cifar10, cifar100, try reduced vgg16 or vgg19:
-        model = vgg16(input_shape = (32,32,3), n_classes = 10, alpha = 0.5, n_downsampling = 3, last_dense_units = 128)
-        model = vgg19(input_shape = (32,32,3), n_classes = 10, alpha = 0.5, n_downsampling = 3, last_dense_units = 128)
-    # for Tiny ImageNet, (64x64x4), try:
-        model = vgg16(input_shape = (32,32,3), n_classes = 10, alpha = 0.5, n_downsampling = 4, last_dense_units = 512)
-        model = vgg19(input_shape = (32,32,3), n_classes = 10, alpha = 0.5, n_downsampling = 4, last_dense_units = 512)
-    # for ImageNet, (224x224x4), try original VGG16 or VGG19:
-        model = vgg16(input_shape = (224,224,3), n_classes = 1000, alpha = 1.0, n_downsampling = 5, last_dense_units = 4096)
-        model = vgg19(input_shape = (224,224,3), n_classes = 1000, alpha = 1.0, n_downsampling = 5, last_dense_units = 4096)
-    ```
+```python
+# for smaller dataset, such as cifar10, cifar100, try reduced vgg16 or vgg19:
+model = vgg16(input_shape = (32,32,3), n_classes = 10, alpha = 0.5, n_downsampling = 3, last_dense_units = 128)
+model = vgg19(input_shape = (32,32,3), n_classes = 10, alpha = 0.5, n_downsampling = 3, last_dense_units = 128)
+# for Tiny ImageNet, (64x64x4), try:
+model = vgg16(input_shape = (32,32,3), n_classes = 10, alpha = 0.5, n_downsampling = 4, last_dense_units = 512)
+model = vgg19(input_shape = (32,32,3), n_classes = 10, alpha = 0.5, n_downsampling = 4, last_dense_units = 512)
+# for ImageNet, (224x224x4), try original VGG16 or VGG19:
+model = vgg16(input_shape = (224,224,3), n_classes = 1000, alpha = 1.0, n_downsampling = 5, last_dense_units = 4096)
+model = vgg19(input_shape = (224,224,3), n_classes = 1000, alpha = 1.0, n_downsampling = 5, last_dense_units = 4096)
+```

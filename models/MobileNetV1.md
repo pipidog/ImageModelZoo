@@ -31,14 +31,14 @@
         A Keras model instance
 
 ## Suggested Models
-    ```python
-    # for cifar10, cifar100, try:
-    MobileNetV1(input_shape = (32,32,3), n_classes = 10, first_block_filters = 32, 
-                    alpha = 0.25, n_downsampling = 3,  l2_weight =1e-4)
-    # for Tiny ImageNet, try:
-    MobileNetV1(input_shape = (64,64,3), n_classes = 200, first_block_filters = 32, 
-                    alpha = 0.5, n_downsampling = 4,  l2_weight =1e-4)
-    # for ImageNet, try:
-    MobileNetV1(input_shape = (224,224,3), n_classes = 1000, first_block_filters = 32, 
-                    alpha = 1.0, n_downsampling = 6,  l2_weight =1e-4)
-    ```
+```python
+# for cifar10, cifar100, try:
+MobileNetV1(input_shape = (32,32,3), n_classes = 10, first_block_filters = 32, 
+                alpha = 0.25, n_downsampling = 3,  l2_weight =1e-4)
+# for Tiny ImageNet, try:
+MobileNetV1(input_shape = (64,64,3), n_classes = 200, first_block_filters = 32, 
+                alpha = 0.5, n_downsampling = 4,  l2_weight =1e-4)
+# for ImageNet, try:
+MobileNetV1(input_shape = (224,224,3), n_classes = 1000, first_block_filters = 32, 
+                alpha = 1.0, n_downsampling = 6,  l2_weight =1e-4)
+```

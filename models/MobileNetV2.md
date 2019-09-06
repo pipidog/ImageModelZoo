@@ -38,11 +38,11 @@
         A Keras model instance
 
 ## Suggested Models
-    ```python
-    # for cifar10, cifar100, try:
-    model = MobileNetV2(input_shape = (32,32,3), n_classes = 10, alpha = 0.5, n_downsampling = 3, last_block_filters = 128)
-    # for Tiny ImageNet, try:
-    model = MobileNetV2(input_shape = (64,64,3), n_classes = 200, alpha = 0.5, n_downsampling = 4, last_block_filters = 256)
-    # for ImageNet, try:
-    model = MobileNetV2(input_shape = (224,224,3), n_classes = 1000, alpha = 1.0, n_downsampling = 5, last_block_filters = 1280)
-    ```
+```python
+# for cifar10, cifar100, try:
+model = MobileNetV2(input_shape = (32,32,3), n_classes = 10, alpha = 0.5, n_downsampling = 3, last_block_filters = 128)
+# for Tiny ImageNet, try:
+model = MobileNetV2(input_shape = (64,64,3), n_classes = 200, alpha = 0.5, n_downsampling = 4, last_block_filters = 256)
+# for ImageNet, try:
+model = MobileNetV2(input_shape = (224,224,3), n_classes = 1000, alpha = 1.0, n_downsampling = 5, last_block_filters = 1280)
+```

@@ -70,48 +70,48 @@ l2 penality used for each Conv2D. suggested value: 1e-4
 A Keras model instance
 
 ## Suggested Models
-    ```python
-    '''
-    Each DenseNet can be speficied as DenseNet-BC{L, k}, where B means if bottleneck is on, C means
-    if compression is on. L is the total layers (Conv2D+Dense, exclude pooling). k is growth rate.
-    In the following, I show how to implement the models discussed in the orignal paper use the API.
-    '''
-    # for cifar 10 or cifar100, try: 
-    # PS: if Tiny ImageNet (64x64x3), try (16, 3, True) for # first_layer, so the problem become cifar.
+```python
+'''
+Each DenseNet can be speficied as DenseNet-BC{L, k}, where B means if bottleneck is on, C means
+if compression is on. L is the total layers (Conv2D+Dense, exclude pooling). k is growth rate.
+In the following, I show how to implement the models discussed in the orignal paper use the API.
+'''
+# for cifar 10 or cifar100, try: 
+# PS: if Tiny ImageNet (64x64x3), try (16, 3, True) for # first_layer, so the problem become cifar.
 
-    # DenseNet {L=40, k=12}
-    model = DenseNet(input_shape = (32, 32, 3), n_classes = 10, first_layer = (16, 3, False), 
-                first_pooling = None,  dense_layers = [12,12,12], growth_rate = 12, 
-                bottleneck = False, compression_rate = 1.0, dropout_rate = 0.2, l2_weight = 1e-4)
-    # DenseNet-BC{L=100, k = 12}
-    model = DenseNet(input_shape = (32, 32, 3), n_classes = 10, first_layer = (16, 3, False), 
-            first_pooling = None,  dense_layers = [16,16,16], growth_rate = 12, 
+# DenseNet {L=40, k=12}
+model = DenseNet(input_shape = (32, 32, 3), n_classes = 10, first_layer = (16, 3, False), 
+            first_pooling = None,  dense_layers = [12,12,12], growth_rate = 12, 
+            bottleneck = False, compression_rate = 1.0, dropout_rate = 0.2, l2_weight = 1e-4)
+# DenseNet-BC{L=100, k = 12}
+model = DenseNet(input_shape = (32, 32, 3), n_classes = 10, first_layer = (16, 3, False), 
+        first_pooling = None,  dense_layers = [16,16,16], growth_rate = 12, 
+        bottleneck = True, compression_rate = 0.5, dropout_rate = 0.2, l2_weight = 1e-4)
+
+# DenseNet-BC{L=100, k = 24}
+model = DenseNet(input_shape = (32, 32, 3), n_classes = 10, first_layer = (16, 3, False), 
+        first_pooling = None,  dense_layers = [16,16,16], growth_rate = 24, 
+        bottleneck = True, compression_rate = 0.5, dropout_rate = 0.2, l2_weight = 1e-4)
+
+# For ImageNet, try:
+
+# DenseNet-BC {L=121, k=32}
+model = DenseNet(input_shape = (224, 224, 3), n_classes = 1000, first_layer = (64, 7, True), 
+            first_pooling = (7,7),  dense_layers = [6,12,24,16], growth_rate = 32, 
             bottleneck = True, compression_rate = 0.5, dropout_rate = 0.2, l2_weight = 1e-4)
 
-    # DenseNet-BC{L=100, k = 24}
-    model = DenseNet(input_shape = (32, 32, 3), n_classes = 10, first_layer = (16, 3, False), 
-            first_pooling = None,  dense_layers = [16,16,16], growth_rate = 24, 
+# DenseNet-BC {L=169, k=32}
+model = DenseNet(input_shape = (224, 224, 3), n_classes = 1000, first_layer = (64, 7, True), 
+            first_pooling = (7,7),  dense_layers = [6,12,32,32], growth_rate = 32, 
             bottleneck = True, compression_rate = 0.5, dropout_rate = 0.2, l2_weight = 1e-4)
 
-    # For ImageNet, try:
+# DenseNet-BC {L=201, k=32}
+model = DenseNet(input_shape = (224, 224, 3), n_classes = 1000, first_layer = (64, 7, True), 
+            first_pooling = (7,7),  dense_layers = [6,12,48,32], growth_rate = 32, 
+            bottleneck = True, compression_rate = 0.5, dropout_rate = 0.2, l2_weight = 1e-4)
 
-    # DenseNet-BC {L=121, k=32}
-    model = DenseNet(input_shape = (224, 224, 3), n_classes = 1000, first_layer = (64, 7, True), 
-                first_pooling = (7,7),  dense_layers = [6,12,24,16], growth_rate = 32, 
-                bottleneck = True, compression_rate = 0.5, dropout_rate = 0.2, l2_weight = 1e-4)
-
-    # DenseNet-BC {L=169, k=32}
-    model = DenseNet(input_shape = (224, 224, 3), n_classes = 1000, first_layer = (64, 7, True), 
-                first_pooling = (7,7),  dense_layers = [6,12,32,32], growth_rate = 32, 
-                bottleneck = True, compression_rate = 0.5, dropout_rate = 0.2, l2_weight = 1e-4)
-
-    # DenseNet-BC {L=201, k=32}
-    model = DenseNet(input_shape = (224, 224, 3), n_classes = 1000, first_layer = (64, 7, True), 
-                first_pooling = (7,7),  dense_layers = [6,12,48,32], growth_rate = 32, 
-                bottleneck = True, compression_rate = 0.5, dropout_rate = 0.2, l2_weight = 1e-4)
-
-    # DenseNet-BC {L=264, k=32}
-    model = DenseNet(input_shape = (224, 224, 3), n_classes = 1000, first_layer = (64, 7, True), 
-                first_pooling = (7,7),  dense_layers = [6,12,64,48], growth_rate = 32, 
-                bottleneck = True, compression_rate = 0.5, dropout_rate = 0.2, l2_weight = 1e-4)
-    ```
+# DenseNet-BC {L=264, k=32}
+model = DenseNet(input_shape = (224, 224, 3), n_classes = 1000, first_layer = (64, 7, True), 
+            first_pooling = (7,7),  dense_layers = [6,12,64,48], growth_rate = 32, 
+            bottleneck = True, compression_rate = 0.5, dropout_rate = 0.2, l2_weight = 1e-4)
+```
