@@ -57,6 +57,10 @@ from tensorflow.keras.regularizers import l2
         the exit flow of Xception is sconv-sconv-maxpool-sconv-sconv. Therefore, you 
         need 4 filter numbers for each sconv.
 
+    dropout_rate: float or None
+        the original paper use a dropout layer right before final regression layer. 
+        the suggested dropout_rate is 0.5 for ImageNet. Use None if you don't want it.
+
     l2_weight: float, default = 1e-4
         l2 penality add to all Conv or SConv layers.
 
@@ -77,21 +81,21 @@ from tensorflow.keras.regularizers import l2
     model = XceptionNet(input_shape = (32,32,3), n_classes = 10, 
             first_two_conv = (32, 64, False), maxpool_block = (64, 64),
             middle_flow_repeat = 8,
-            exit_flow = (128, 128, 256, 256), l2_weight = 1e-4)
+            exit_flow = (128, 128, 256, 256), dropout_rate = 0.5, l2_weight = 1e-4)
     (it will give you roughly the same number of parameters as ResNet 20, 0.27M v.s. 0.30M)
 
     # For cifar10 or cifar100
     model = XceptionNet(input_shape = (32,32,3), n_classes = 10, 
             first_two_conv = (32, 64, False), maxpool_block = (64, 128),
             middle_flow_repeat = 6,
-            exit_flow = (128, 128, 128, 128), l2_weight = 1e-4)
+            exit_flow = (128, 128, 128, 128), dropout_rate = 0.5, l2_weight = 1e-4)
     (it will give you roughly the same number of parameters as ResNet 32, 0.46M v.s 0.48M)
 
     * For larger datasets, e.g. ImageNet, try (obtained from original paper)
     model = XceptionNet(input_shape = (299,299,3), n_classes = 1000, 
             first_two_conv = (32, 64, True), maxpool_block = (128, 256, 728),
             middle_flow_repeat = 8,
-            exit_flow = (728, 1024, 1536, 2048), l2_weight = 1e-4)    
+            exit_flow = (728, 1024, 1536, 2048), dropout_rate = 0.5, l2_weight = 1e-4)    
 '''
 
 class ConvBlocks:
@@ -139,7 +143,7 @@ class ConvBlocks:
 def XceptionNet(input_shape = (299,299,3), n_classes = 1000, 
             first_two_conv = (32, 64, True), maxpool_block = (128, 256, 728),
             middle_flow_repeat = 8,
-            exit_flow = (728, 1024, 1536, 2048), l2_weight = 1e-4):
+            exit_flow = (728, 1024, 1536, 2048), dropout_rate = 0.5, l2_weight = 1e-4):
     x_in = layers.Input(shape = input_shape)
     # Entry Flow
     x = ConvBlocks.BNConv(x_in, first_two_conv[0], kernel_size = (3,3), 
@@ -160,6 +164,8 @@ def XceptionNet(input_shape = (299,299,3), n_classes = 1000,
 
     # classifier
     x = layers.GlobalAveragePooling2D()(x)
+    if dropout_rate is not None:
+        x = layers.Dropout(dropout_rate)(x)
     x_out = layers.Dense(n_classes, activation = 'softmax')(x)
     model = Model(inputs = x_in, outputs = x_out)
     return model
@@ -168,7 +174,7 @@ if __name__ == '__main__':
     model = XceptionNet(input_shape = (299,299,3), n_classes = 1000, 
             first_two_conv = (32, 64, True), maxpool_block = (128, 256, 728),
             middle_flow_repeat = 8,
-            exit_flow = (728, 1024, 1536, 2048), l2_weight = 1e-4)   
+            exit_flow = (728, 1024, 1536, 2048), dropout_rate = 0.5, l2_weight = 1e-4)   
     model.summary()
     plot_model(model, 'model.png', show_shapes = True)
 

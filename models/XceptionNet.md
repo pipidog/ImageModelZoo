@@ -51,6 +51,10 @@ of xception blocks.
 the exit flow of Xception is sconv-sconv-maxpool-sconv-sconv. Therefore, you 
 need 4 filter numbers for each sconv.
 
+**dropout_rate**, float or None     
+the original paper use a dropout layer right before final regression layer. 
+the suggested dropout_rate is 0.5 for ImageNet. Use None if you don't want it.
+
 **l2_weight**, float, default = 1e-4        
 l2 penality add to all Conv or SConv layers.
 
@@ -74,7 +78,7 @@ the following parameters.
 model = XceptionNet(input_shape = (32,32,3), n_classes = 10, 
         first_two_conv = (32, 64, False), maxpool_block = (64, 64),
         middle_flow_repeat = 8,
-        exit_flow = (128, 128, 256, 256), l2_weight = 1e-4)
+        exit_flow = (128, 128, 256, 256), dropout_rate = 0.5, l2_weight = 1e-4)
 
 
 # For cifar10, cifar100
@@ -82,12 +86,12 @@ model = XceptionNet(input_shape = (32,32,3), n_classes = 10,
 model = XceptionNet(input_shape = (32,32,3), n_classes = 10, 
         first_two_conv = (32, 64, False), maxpool_block = (64, 128),
         middle_flow_repeat = 6,
-        exit_flow = (128, 128, 128, 128), l2_weight = 1e-4)
+        exit_flow = (128, 128, 128, 128), dropout_rate = 0.5, l2_weight = 1e-4)
 
 
 # For larger datasets, e.g. ImageNet, use the parameters suggested by the original paper)
 model = XceptionNet(input_shape = (299,299,3), n_classes = 1000, 
         first_two_conv = (32, 64, True), maxpool_block = (128, 256, 728),
         middle_flow_repeat = 8,
-        exit_flow = (728, 1024, 1536, 2048), l2_weight = 1e-4)    
+        exit_flow = (728, 1024, 1536, 2048), dropout_rate = 0.5, l2_weight = 1e-4)    
 ```
