@@ -9,24 +9,55 @@ from tensorflow.keras.regularizers import l2
 
     Build a Xception Net from scratch, reference https://arxiv.org/abs/1610.02357
 
+    The original Xception is only designed for ImageNet. There is no any suggested
+    structure for other datasets such as cifar10, cifar100, Tiny ImageNet, etc, which 
+    comes with much lower resolutions. 
+
     Xception Net has the following structure: (see Fig.5 in original paper)
-    part 1: two conv, the first conv performs a stride for downsampling (optional)
-    part 2: several sconv-sconv-maxpooling block for downsamping
-    part 3: repeat xception blocks for several times 
-            (number filter is fixed to the last layer in maxpool blocks )
-    part 4: another sconv-sconv-maxpooling block for downsamping
-    part 5: two sconv-sconv
-    part 6: global average pooling-dense-softmax
+    Entry Flow:     
+        Two Conv (first one with stride = 2) and a series of sconv-sconv-maxpooling 
+        blocks for downsampling
+    Middle Flow: 
+        Repeat sconv-sconv-sconv blocks where the filters size is identical to the 
+        last layer in Entry flow.
+    Exit Flow:
+        a sconv-sconv-maxpooling block, two sconv layers and finally a global average
+        pooling. 
 
-    Therefore, to specify a Xception Net, you need to input their corresponding parameters
+    Apprently, the entry and exit flows are somewhat arbitary and has no simple 
+    perodic structure and all the downsamplings occur here.
 
-    part 1: input the number of filter of the first two conv and whether to perform downsampling
-    part 2: number of sconv-sconv-maxpooling blocks (at least 1 block) and their corresponding filters
-    part 3: the number of repeats
-    part 4 & part 5: 4 number filters of each sconv layer
-    part 6: no paramaters needed
-    So it is not difficult to define a Xception Net
+    In order to define a Xception-like Network with best flexibility, we design the 
+    following API:
     
+    => First, you need you define your own entry flow, the entry flow should first built
+    by a few conventional layers and followed by a few sconv-sconv-maxpooling blocks.
+
+    It can be expressed by this way, e.g:
+    (('conv',32,True), ('sconv_pool',128,128))
+    
+    ('conv',32,True) means a conventional layer with 32 filters (3x3), True means use
+    a stride = 2 for downsampling
+
+    ('sconv_pool', 128,128) means it a scconv-sconv-maxpool blocks, with 128 and 128 
+    filters (kernel = 3x3, stride = 1) respectively for each sconv layer  
+
+    => second, you need to define the repeats of the middle flow. since it is simply
+    a stack of sconv-sconv-socnv layers with same number of filters (the last layer
+    in entry flow), kernel size (3x3) and strides (1,1), it only requires a single
+    parameter, i.e. the number of repeats, to define. 
+
+    => thrid, the exit flow. It is built by a few sconv-pool blocks and sconv layers. 
+    Therefore, it ca be define by, e.g.:
+    (('sconv_pool',728,1024),('sconv',1536)) 
+
+    the definition of 'sconv_pool' is the same with the entry flow. As for the ('sconv', 1536)
+    it means a sconv layer with 1536 filters (kernel size = 3x3, stride = 1)
+
+    If you follow the above the API to define a network, you can consider it a Xception-like
+    network. 
+
+
 { Arguments }
     input_shape: a tuple w/ 3 elements
         hape of input image; e.g.: (32,32,3) for cifar10
@@ -34,35 +65,23 @@ from tensorflow.keras.regularizers import l2
     n_classes: an integer
         number of classes in dataset
 
-    first_two_conv: (int, int, boolen)
-        number of filters of the first two conv layer and whether to perform a stride = 2
-        downsampling in the first layer.
 
-    maxpool_block:
-        each maxpool-block is constituted by sconv-sconv-maxpool where the number of filters
-        are the same for both sconv. Therefore, you only need one parameter, i.e. the number
-        of filters, to specify a maxpool_block. 
-        
-        e.g. (64, 128)
-
-        means there are two maxpool_block with filters = 64 and 128 respectively.
+    entry_flow: tuple of tuple 
+        must defined by 'conv' and 'sconv' e.g.: (('conv',32,True),('sconv_pool',128,128))
+        (see summary for its meaning). The first layer must be a 'conv'
 
     middle_flow_repeat: int
-        the middle flow part is a series of xception blocks (sconv-sconv-sconv) with 
-        filter size identical to the last layer in maxpool_block. therefore, you only 
-        need a single parameter to define this part, e.g. 8, means respeat 8 times 
-        of xception blocks.
+         number of repeats of the sconv-sconv-sconv blocks in the middle flow
 
-    exit_flow_filters:
-        the exit flow of Xception is sconv-sconv-maxpool-sconv-sconv. Therefore, you 
-        need 4 filter numbers for each sconv.
+    exit_flow: tpule of tupel
+        must define 'sconv' and 'sconv_pool', e.g. (('sconv_pool',728,1024),('sconv',1536))
+        (see summary for its meaning)
 
-    dropout_rate: float or None
-        the original paper use a dropout layer right before final regression layer. 
-        the suggested dropout_rate is 0.5 for ImageNet. Use None if you don't want it.
+    dropout_rate: float 
+        the original paper use 0.5 at the final dense layer 
 
-    l2_weight: float, default = 1e-4
-        l2 penality add to all Conv or SConv layers.
+    l2_weight: float 
+        l2 weight for each conv layer
 
 { Returns }
     Model: 
@@ -77,25 +96,12 @@ from tensorflow.keras.regularizers import l2
     complexity is similar, hopefully you can still get similar results when using 
     the following parameters.
     
-    # For cifar10 or cifar100
-    model = XceptionNet(input_shape = (32,32,3), n_classes = 10, 
-            first_two_conv = (32, 64, False), maxpool_block = (64, 64),
-            middle_flow_repeat = 8,
-            exit_flow = (128, 128, 256, 256), dropout_rate = 0.5, l2_weight = 1e-4)
-    (it will give you roughly the same number of parameters as ResNet 20, 0.27M v.s. 0.30M)
-
-    # For cifar10 or cifar100
-    model = XceptionNet(input_shape = (32,32,3), n_classes = 10, 
-            first_two_conv = (32, 64, False), maxpool_block = (64, 128),
-            middle_flow_repeat = 6,
-            exit_flow = (128, 128, 128, 128), dropout_rate = 0.5, l2_weight = 1e-4)
-    (it will give you roughly the same number of parameters as ResNet 32, 0.46M v.s 0.48M)
-
     * For larger datasets, e.g. ImageNet, try (obtained from original paper)
     model = XceptionNet(input_shape = (299,299,3), n_classes = 1000, 
-            first_two_conv = (32, 64, True), maxpool_block = (128, 256, 728),
-            middle_flow_repeat = 8,
-            exit_flow = (728, 1024, 1536, 2048), dropout_rate = 0.5, l2_weight = 1e-4)    
+    entry_flow = (('conv',32,True),('conv',64,False),('sconv_pool',128,128),('sconv_pool',256,256),('sconv_pool',728,728)),
+    middle_flow_repeat = 9,
+    exit_flow = (('sconv_pool',728,1024),('sconv',1536),('sconv',2048)),
+    dropout_rate = 0.5, l2_weight = 1e-4)
 '''
 
 class ConvBlocks:
@@ -141,27 +147,35 @@ class ConvBlocks:
         return x_in
 
 def XceptionNet(input_shape = (299,299,3), n_classes = 1000, 
-            first_two_conv = (32, 64, True), maxpool_block = (128, 256, 728),
-            middle_flow_repeat = 8,
-            exit_flow = (728, 1024, 1536, 2048), dropout_rate = 0.5, l2_weight = 1e-4):
+    entry_flow = (('conv',32,True),('conv',64,False),('sconv_pool',128,128),('sconv_pool',256,256),('sconv_pool',728,728)),
+    middle_flow_repeat = 9,
+    exit_flow = (('sconv_pool',728,1024),('sconv',1536),('sconv',2048)),
+    dropout_rate = 0.5, l2_weight = 1e-4):
+
     x_in = layers.Input(shape = input_shape)
-    # Entry Flow
-    x = ConvBlocks.BNConv(x_in, first_two_conv[0], kernel_size = (3,3), 
-            strides = (2,2) if first_two_conv else (1,1), 
-            l2_weight = l2_weight, has_act = True)
-    x = ConvBlocks.BNConv(x, first_two_conv[1], kernel_size = (3,3), 
-            strides = (1,1), l2_weight = l2_weight, has_act = True)
-    for n, filters in enumerate(maxpool_block):
-        x = ConvBlocks.SepConvMaxPoolBlock(x, (filters, filters), l2_weight = l2_weight, front_relu=(n!=0))
+    x = x_in
+    # Entry flow
+    for n, (block_type, attr1, attr2) in enumerate(entry_flow):
+        if n == 0 and block_type != 'conv':
+            raise Exception('entry flow must begin with a "conv" !')
+        if block_type == 'conv':
+            x = ConvBlocks.BNConv(x, attr1, (3,3), 2 if attr2 else 1, l2_weight, True)
+        elif block_type == 'sconv_pool':
+            x = ConvBlocks.SepConvMaxPoolBlock(x, (attr1,attr2), l2_weight, front_relu=(entry_flow[n-1][0]!='conv'))
+        else: 
+            raise Exception('entry flow should be built via "conv" and "sconv_pool" only')
 
-    # middle flow 
-    x = ConvBlocks.SepConvBlock(x, maxpool_block[-1], repeats = middle_flow_repeat, l2_weight = 1e-4)
+    # middle flow
+    x = ConvBlocks.SepConvBlock(x, entry_flow[-1][-1], repeats = middle_flow_repeat, l2_weight = 1e-4)
 
-    # Exit Flow
-    x = ConvBlocks.SepConvMaxPoolBlock(x, exit_flow[0:2], l2_weight = l2_weight, front_relu= True)
-    x = ConvBlocks.SepConv(x, exit_flow[2], kernel_size = (3,3), strides = (1,1), l2_weight = l2_weight, relu = 'back')
-    x = ConvBlocks.SepConv(x, exit_flow[3], kernel_size = (3,3), strides = (1,1), l2_weight = l2_weight, relu = 'back')
-
+    # exit flow
+    for block in exit_flow:
+        if block[0] == 'sconv_pool':
+            x = ConvBlocks.SepConvMaxPoolBlock(x, (block[1],block[2]), l2_weight, front_relu=True)
+        elif block[0] == 'sconv':
+            x = ConvBlocks.SepConv(x, block[1], 3, 1, l2_weight, 'back')
+        else:
+             raise Exception('exit flow should be built via "sconv" and "sconv_pool" only')
     # classifier
     x = layers.GlobalAveragePooling2D()(x)
     if dropout_rate is not None:
@@ -171,10 +185,7 @@ def XceptionNet(input_shape = (299,299,3), n_classes = 1000,
     return model
 
 if __name__ == '__main__':
-    model = XceptionNet(input_shape = (299,299,3), n_classes = 1000, 
-            first_two_conv = (32, 64, True), maxpool_block = (128, 256, 728),
-            middle_flow_repeat = 8,
-            exit_flow = (728, 1024, 1536, 2048), dropout_rate = 0.5, l2_weight = 1e-4)   
+    model = XceptionNet()   
     model.summary()
     plot_model(model, 'model.png', show_shapes = True)
 
