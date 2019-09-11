@@ -102,7 +102,7 @@ class ConvBlocks:
     @staticmethod
     def BNConv(x, filters, kernel_size, strides, l2_weight = 1e-4, has_act = True):
         x = layers.Conv2D(filters, kernel_size = kernel_size, strides = strides, 
-                padding = 'same', kernel_regularizer=l2(l2_weight))(x)
+                padding = 'same', kernel_initializer='he_normal', kernel_regularizer=l2(l2_weight))(x)
         x = layers.BatchNormalization()(x)
         if has_act:
             x = layers.ReLU()(x)          
@@ -114,7 +114,7 @@ class ConvBlocks:
         if relu == 'front':
             x = layers.ReLU()(x)
         x = layers.SeparableConv2D(filters, kernel_size = kernel_size, strides = strides, 
-                padding = 'same', kernel_regularizer=l2(l2_weight))(x)
+                padding = 'same', kernel_initializer='he_normal', kernel_regularizer=l2(l2_weight))(x)
         x = layers.BatchNormalization()(x)
         if relu == 'back':
             x = layers.ReLU()(x)

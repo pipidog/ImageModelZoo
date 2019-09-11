@@ -95,7 +95,7 @@ class ConvBlocks:
     @staticmethod
     def BNConv(x_in, filters, kernel_size, strides, l2_weight = 1e-4, has_act = True):
         x = layers.Conv2D(filters, kernel_size = kernel_size, strides = strides, 
-                padding = 'same', kernel_regularizer=l2(l2_weight))(x_in)
+                padding = 'same', kernel_initializer='he_normal', kernel_regularizer=l2(l2_weight))(x_in)
         x = layers.BatchNormalization()(x)
         if has_act:
             x = layers.ReLU()(x)          
@@ -107,7 +107,7 @@ class ConvBlocks:
             x = cls.BNConv(x_in, n_channels, (3,3), strides = (2,2), l2_weight = l2_weight)
             x = cls.BNConv(x, n_channels, (3,3), strides = (1,1), l2_weight = l2_weight, has_act = False)
             x_tmp = layers.Conv2D(n_channels, kernel_size = (1,1), strides = (2,2), 
-                padding = 'same', kernel_regularizer=l2(l2_weight))(x_in)
+                padding = 'same', kernel_initializer='he_normal', kernel_regularizer=l2(l2_weight))(x_in)
             x = layers.Add()([x, x_tmp])
             x = layers.ReLU()(x)
         else:
@@ -124,7 +124,7 @@ class ConvBlocks:
             x = cls.BNConv(x, int(n_channels/4), (3,3), strides = (2,2), l2_weight = l2_weight)
             x = cls.BNConv(x, n_channels, (1,1), strides = (1,1), l2_weight = l2_weight, has_act = False)
             x_tmp = layers.Conv2D(n_channels, kernel_size = (1,1), strides = (2,2), 
-                padding = 'same', kernel_regularizer=l2(l2_weight))(x_in)
+                padding = 'same', kernel_initializer='he_normal', kernel_regularizer=l2(l2_weight))(x_in)
             x = layers.Add()([x, x_tmp])
             x = layers.ReLU()(x)
         else:

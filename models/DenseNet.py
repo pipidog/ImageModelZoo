@@ -132,7 +132,7 @@ class ConvBlocks:
     def BNConv(x_in, filters, kernel_size, l2_weight, dropout_rate):
         x = layers.BatchNormalization()(x_in)
         x = layers.ReLU()(x)
-        x = layers.Conv2D(filters, kernel_size = kernel_size, 
+        x = layers.Conv2D(filters, kernel_size = kernel_size, kernel_initializer='he_normal',
                 padding = 'same', use_bias=False, kernel_regularizer=l2(l2_weight))(x)
         if dropout_rate:
             x = layers.Dropout(dropout_rate)(x)            
@@ -170,7 +170,7 @@ def DenseNet(input_shape = (224,224,4), n_classes = 1000,
     x_in = layers.Input(shape = input_shape)
     first_strides = (2,2) if first_layer[-1] else (1,1)
     x = layers.Conv2D(filters = first_layer[0], kernel_size = (first_layer[1],)*2, 
-                    strides = first_strides, padding = 'same',
+                    strides = first_strides, padding = 'same', kernel_initializer='he_normal',
                     use_bias=False, kernel_regularizer=l2(l2_weight))(x_in)
     if first_pooling is not None:
         x = layers.MaxPooling2D(pool_size=first_pooling, strides=(2,2), padding = 'same')(x) 
