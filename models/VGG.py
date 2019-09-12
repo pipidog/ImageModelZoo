@@ -51,7 +51,7 @@ class ConvBlock:
     @staticmethod
     def conv(x_in, filters):
         x = layers.Conv2D(filters = filters, kernel_size = (3,3), strides = (1,1), 
-            padding = 'same',  kernel_initializer='he_normal', kernel_regularizer = l2(4e-5))(x_in)
+            padding = 'same',  kernel_initializer='he_uniform', kernel_regularizer = l2(4e-5))(x_in)
         return x
     @staticmethod
     def maxpool(x_in):

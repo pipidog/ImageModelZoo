@@ -68,7 +68,7 @@ class ConvBlocks:
     @classmethod  # Conv + BN
     def BNConv(cls, x_in, filters, kernel_size = (1,1), strides = (1,1), l2_weight = 1e-4):
         x = layers.Conv2D(filters = filters, kernel_size = kernel_size, strides = strides, 
-            padding = 'same',  kernel_initializer='he_normal', kernel_regularizer = l2(l2_weight))(x_in)
+            padding = 'same',  kernel_initializer='he_uniform', kernel_regularizer = l2(l2_weight))(x_in)
         x = layers.BatchNormalization()(x)
         x = layers.ReLU(max_value = 6.0)(x)        
         return x
@@ -76,7 +76,7 @@ class ConvBlocks:
     @classmethod # Depthwise Conv + BN
     def DWBNConv(cls, x_in, depth_multiplier = 1, kernel_size = (3,3), strides = (1,1), l2_weight = 1e-4):
         x = layers.DepthwiseConv2D(kernel_size = (3,3), strides= strides, depth_multiplier=1, 
-            padding='same',  kernel_initializer='he_normal', kernel_regularizer= l2(l2_weight))(x_in)
+            padding='same',  kernel_initializer='he_uniform', kernel_regularizer= l2(l2_weight))(x_in)
         x = layers.BatchNormalization()(x)
         x = layers.ReLU(max_value = 6.0)(x)       
         return x

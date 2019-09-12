@@ -108,7 +108,7 @@ class ConvBlocks:
     @staticmethod
     def BNConv(x, filters, kernel_size, strides, l2_weight = 1e-4, has_act = True):
         x = layers.Conv2D(filters, kernel_size = kernel_size, strides = strides, 
-                padding = 'same', kernel_initializer='he_normal', kernel_regularizer=l2(l2_weight))(x)
+                padding = 'same', kernel_initializer='he_uniform', kernel_regularizer=l2(l2_weight))(x)
         x = layers.BatchNormalization()(x)
         if has_act:
             x = layers.ReLU()(x)          
@@ -120,7 +120,7 @@ class ConvBlocks:
         if relu == 'front':
             x = layers.ReLU()(x)
         x = layers.SeparableConv2D(filters, kernel_size = kernel_size, strides = strides, 
-                padding = 'same', kernel_initializer='he_normal', kernel_regularizer=l2(l2_weight))(x)
+                padding = 'same', kernel_initializer='he_uniform', kernel_regularizer=l2(l2_weight))(x)
         x = layers.BatchNormalization()(x)
         if relu == 'back':
             x = layers.ReLU()(x)
@@ -185,11 +185,17 @@ def XceptionNet(input_shape = (299,299,3), n_classes = 1000,
     return model
 
 if __name__ == '__main__':
-    model = XceptionNet()   
+    # model = XceptionNet()   
+    # model.summary()
+    # plot_model(model, 'model.png', show_shapes = True)
+
+    model= XceptionNet(input_shape = (32,32,3), n_classes = 10, 
+            entry_flow = (('conv',32,False),('conv',64,False),('sconv_pool',64,64)),
+            middle_flow_repeat = 9,
+            exit_flow = (('sconv_pool',128,128),('sconv',256),('sconv',256)),
+            dropout_rate = 0.5, l2_weight = 1e-4)
     model.summary()
     plot_model(model, 'model.png', show_shapes = True)
-
-    
 
 
 
